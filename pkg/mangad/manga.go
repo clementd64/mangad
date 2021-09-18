@@ -76,12 +76,6 @@ func (m *Manga) downloadChapter(index int, filename string) error {
 		}
 	}
 
-	if _, err := os.Stat(m.Title); os.IsNotExist(err) {
-		if err := os.MkdirAll(m.Title, 0775); err != nil {
-			return err
-		}
-	}
-
 	return zipFolder(dir, filename)
 }
 
@@ -116,6 +110,12 @@ func (m *Manga) GetDownloaded() (map[int]bool, error) {
 }
 
 func (m *Manga) Process() error {
+	if _, err := os.Stat(m.Title); os.IsNotExist(err) {
+		if err := os.MkdirAll(m.Title, 0775); err != nil {
+			return err
+		}
+	}
+
 	if err := m.exportDetails(); err != nil {
 		return err
 	}
