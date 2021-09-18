@@ -32,17 +32,20 @@ func main() {
 		log.Print("Tachidesk is running")
 	}
 
+	if *sleepTime == time.Duration(0) {
+		run(t)
+	} else {
+		for {
+			run(t)
+			time.Sleep(*sleepTime)
+		}
+	}
+}
+
+func run(t *mangad.Mangad) {
 	conf, err := mangad.LoadConfig(*configFile)
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	if *sleepTime == time.Duration(0) {
-		t.Run(conf)
-	} else {
-		for {
-			t.Run(conf)
-			time.Sleep(*sleepTime)
-		}
-	}
+	t.Run(conf)
 }
