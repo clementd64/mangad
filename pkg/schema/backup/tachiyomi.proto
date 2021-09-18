@@ -1,0 +1,16 @@
+syntax = "proto2";
+
+option go_package = "./backup";
+
+message Backup {
+  // @ProtoNumber(1) val backupManga: List<BackupManga>
+  repeated BackupManga backupManga = 1;
+}
+
+message BackupManga {
+  // @ProtoNumber(1) var source: Long
+  required int64 source = 1;
+  // @ProtoNumber(2) var url: String
+  required string url = 2;
+}
+
