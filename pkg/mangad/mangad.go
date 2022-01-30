@@ -86,7 +86,7 @@ func (t *Mangad) installExtension(pkgName string) error {
 	return err
 }
 
-func (t *Mangad) findManga(sourceId int64, url string) (*tachidesk.Manga, error) {
+func (t *Mangad) findManga(sourceId int64, url string, update bool) (*tachidesk.Manga, error) {
 	list := []tachidesk.Manga{}
 	if err := t.fetch("v1/category/0", &list); err != nil {
 		return nil, err
@@ -94,6 +94,13 @@ func (t *Mangad) findManga(sourceId int64, url string) (*tachidesk.Manga, error)
 
 	for _, manga := range list {
 		if manga.SourceId == strconv.FormatInt(sourceId, 10) && manga.Url == url {
+			if update {
+				m := &tachidesk.Manga{}
+				if err := t.fetch("v1/manga/"+strconv.Itoa(manga.Id)+"?onlineFetch=true", &m); err != nil {
+					return nil, err
+				}
+				return m, nil
+			}
 			return &manga, nil
 		}
 	}
@@ -207,7 +214,7 @@ func (t *Mangad) Manga(source int64, pkgName, url, title string) (*Manga, error)
 		}
 	}
 
-	mangaDetail, err := t.findManga(source, url)
+	mangaDetail, err := t.findManga(source, url, !ok)
 	if err != nil {
 		return nil, err
 	}
@@ -215,7 +222,7 @@ func (t *Mangad) Manga(source int64, pkgName, url, title string) (*Manga, error)
 		if err := t.addManga(source, url); err != nil {
 			return nil, err
 		}
-		if mangaDetail, err = t.findManga(source, url); err != nil {
+		if mangaDetail, err = t.findManga(source, url, !ok); err != nil {
 			return nil, err
 		}
 	}
